@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Experiment 1 — Thickness of Wire using Laser Diffraction</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="h-title">EXPERIMENT 1 — THICKNESS OF WIRE</div>
+    <div class="h-sub" id="hSub">Laser Diffraction &nbsp;·&nbsp; λ = 6328 Å = 632.8 nm &nbsp;·&nbsp; d = Dλ/b</div>
+  </div>
+  <div class="laser-badge"><div class="ldot" id="ldot"></div><span id="lstatus">LASER OFF</span></div>
+</header>
+
+<div class="nav">
+  <button class="ntab active" onclick="showPage('sim',this)">Simulation</button>
+  <button class="ntab" onclick="showPage('theory',this)">Theory</button>
+  <button class="ntab" onclick="showPage('procedure',this)">Procedure</button>
+  <button class="ntab" onclick="showPage('graph',this)">Graph</button>
+  <button class="ntab" onclick="showPage('quiz',this)">Quiz</button>
+</div>
+
+<div class="ws">
+
+<div class="page active" id="page-sim">
+
+  <div class="left-panel">
+    <div class="ph">⚙ SETUP</div>
+    <div class="laser-selector-wrap">
+      <div class="laser-selector-label">▸ SELECT LASER SOURCE</div>
+      <div class="laser-grid" id="laserGrid"></div>
+    </div>
+    <div style="padding:6px 10px 3px;font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--muted);letter-spacing:1px;">SELECT WIRE (d increasing →)</div>
+    <div class="wire-grid" id="wireGrid"></div>
+    <div class="ctrl-group">
+      <div class="ctrl-label">Screen Distance D <span class="ctrl-val" id="vD">1000 mm</span></div>
+      <input type="range" id="slD" min="700" max="1500" value="1000" step="100" oninput="onDChange()">
+      <div class="d-ticks"><span>700</span><span>900</span><span>1100</span><span>1300</span><span>1500</span></div>
+    </div>
+    <button class="laser-btn" id="btnLaser" onclick="toggleLaser()">◉ &nbsp;LASER OFF</button>
+    <div class="readout">
+      <div class="row"><span class="rk">Laser:</span><span id="ro-laser" class="rv">—</span></div>
+      <div class="row"><span class="rk">λ:</span><span class="rv" id="ro-lambda">—</span></div>
+      <div class="row"><span class="rk">Wire:</span><span class="rv-d" id="ro-wire">—</span></div>
+      <div class="row"><span class="rk">D:</span><span class="rv" id="ro-D">—</span></div>
+      <div style="border-top:1px solid var(--dim);margin-top:4px;padding-top:4px;">
+        <div class="row"><span class="rk">b = Dλ/d =</span><span class="rv-b" id="ro-b">—</span></div>
+      </div>
+    </div>
+    <div class="btn-area">
+      <div class="laser-lock-notice show" id="lockNotice">⚠ TURN ON LASER TO ADD READINGS</div>
+      <button class="abtn abtn-add" id="btnAdd" onclick="addReading()" disabled>＋ Add Reading</button>
+      <button class="abtn abtn-calc" id="btnCalc" onclick="calculateAll()" disabled>▶ Calculate Mean d</button>
+      <button class="abtn abtn-clear" onclick="clearAll()">✕ Clear All</button>
+      <button class="abtn abtn-load" onclick="loadDemo()">📋 Load Demo Readings</button>
+    </div>
+    <div class="formula-band">d = D × λ / b</div>
+    <div style="padding:0 12px 10px;font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--muted);line-height:1.7;">
+      b = measured half-width (±2.5% noise)<br>
+      Each D → different b → different d_calc<br>
+      Increasing D → pattern visually spreads<br>
+      Mean d = average of all d_calc
+    </div>
+  </div>
+
+  <div class="center">
+    <canvas id="vc"></canvas>
+    <div class="c-hud" id="cHud">Turn ON laser to begin</div>
+    <div class="b-hud" id="bHud">b = — mm</div>
+  </div>
+
+  <div class="right-panel">
+    <div class="ph">📋 OBSERVATION TABLE</div>
+    <div style="padding:3px 8px 5px;font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--muted);">
+      b = measured (noise) &nbsp;·&nbsp; d_calc = Dλ/b after [▶ Calculate]
+    </div>
+    <div id="tablesContainer"></div>
+    <div class="formula-band" style="margin:8px;">d = Dλ/b &nbsp;·&nbsp; λ varies per laser</div>
+  </div>
+</div>
+
+<div class="page" id="page-theory">
+  <div class="info-page">
+    <h2>THEORY</h2>
+    <h3>Setup</h3>
+    <p>A laser is directed at a thin wire. By Babinet's Principle, the wire's diffraction pattern equals that of a slit of the same width.</p>
+    <h3>First Minimum Condition</h3>
+    <div class="fbox">d · sin θ = λ</div>
+    <h3>Working Formula</h3>
+    <p>With D = wire-to-screen distance, b = half-width of central maxima, small angle: sin θ ≈ b/D:</p>
+    <div class="fbox">d = D × λ / b</div>
+    <div class="nbox">📌 <b>b ∝ D</b> — As screen distance increases, the entire diffraction pattern physically spreads wider. You can directly see this in the simulation: move D slider and watch the fringes expand or contract on the screen.</div>
+    <h3>Why d_calc varies per reading?</h3>
+    <p>Real b measurements have ±1–3% error (scale resolution). Different D readings give slightly different b → slightly different d_calc. Mean of all readings gives the best estimate of true d.</p>
+    <h3>Intensity Distribution</h3>
+    <div class="fbox">I(θ) = I₀ · (sinβ/β)²  &nbsp; β = πd sinθ / λ</div>
+  </div>
+</div>
+
+<div class="page" id="page-procedure">
+  <div class="info-page">
+    <h2>PROCEDURE</h2>
+    <div class="step"><div class="sn">1</div><div class="st">Select laser source (He-Ne default). Select Wire 1. Switch ON laser.</div></div>
+    <div class="step"><div class="sn">2</div><div class="st">Set D = 700 mm. Observe diffraction pattern on screen — central bright band, dark fringes on sides. Notice pattern is narrow at small D.</div></div>
+    <div class="step"><div class="sn">3</div><div class="st">Click [+ Add Reading]. b is auto-calculated with small noise.</div></div>
+    <div class="step"><div class="sn">4</div><div class="st">Move D to 900, 1100, 1300, 1500 mm. Watch pattern SPREAD wider as D increases. Add each reading.</div></div>
+    <div class="step"><div class="sn">5</div><div class="st">Click [▶ Calculate Mean d] — d_calc fills for each row, mean d shown below with σ.</div></div>
+    <div class="step"><div class="sn">6</div><div class="st">Repeat for all 5 wires. Thinner wire = larger b = wider pattern.</div></div>
+    <div class="step"><div class="sn">7</div><div class="st">Graph tab: plot b vs D — straight line, slope = λ/d → verify d independently.</div></div>
+    <h3>Precautions</h3>
+    <p>1. Never look directly into the laser beam.</p>
+    <p>2. Keep room dark for clearer fringe visibility.</p>
+    <p>3. Measure b from exact centre of central bright fringe to first dark fringe.</p>
+  </div>
+</div>
+
+<div class="page" id="page-graph">
+  <div class="graph-page">
+    <h2>GRAPH — b (mm) vs D (mm)</h2>
+    <p style="font-size:12px;color:var(--muted);">b=(λ/d)·D → straight line, slope=λ/d → d=λ/slope</p>
+    <canvas id="gChart" style="max-height:420px;"></canvas>
+    <button class="abtn abtn-add" style="width:180px;" onclick="refreshGraph()">⟳ Refresh Graph</button>
+    <div class="slope-box" id="slopeBox">Add readings in Simulation tab, then refresh.</div>
+  </div>
+</div>
+
+<div class="page" id="page-quiz">
+  <div class="info-page">
+    <h2>QUIZ</h2>
+    <div id="qContainer"></div>
+    <div class="qscore" id="qScore"></div>
+    <div style="display:flex;gap:8px;margin-top:10px;">
+      <button class="abtn abtn-calc" style="width:150px;" onclick="submitQuiz()">Submit</button>
+      <button class="abtn abtn-load" style="width:150px;" onclick="resetQuiz()">Reset</button>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
