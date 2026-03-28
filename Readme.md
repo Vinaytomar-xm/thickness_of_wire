@@ -282,3 +282,5 @@ To make it work **fully offline**, download these and replace the CDN links with
 Free to use for educational purposes.  
 Built with HTML5 Canvas + Chart.js + Vanilla JS.  
 No frameworks. No build tools. Just open and run.
+
+## made with ❤️ by [Vinay singh Tomar]
