@@ -6,8 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Experiment 1 — Thickness of Wire using Laser Diffraction</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="styles.css">
-  
+<link rel="stylesheet" href="styles.css">
+
 </head>
 
 <body>
@@ -94,63 +94,217 @@
 
     <div class="page" id="page-theory">
       <div class="info-page">
-        <h2>THEORY</h2>
-        <h3>Setup</h3>
-        <p>A laser is directed at a thin wire. By Babinet's Principle, the wire's diffraction pattern equals that of a
-          slit of the same width.</p>
-        <h3>First Minimum Condition</h3>
+        <h2>THEORY — UNDERSTANDING THE EXPERIMENT FROM SCRATCH</h2>
+
+        <h3>🔴 What is a Laser?</h3>
+        <p>A laser is a special light source that produces light of a single colour (wavelength), travels in a perfectly
+          straight line, and is extremely narrow. In this experiment we use a <b>He-Ne (Helium-Neon) laser</b> which
+          emits red light at a wavelength of <b>λ = 632.8 nm = 6328 Å</b>. Because the beam is so well-defined, it is
+          perfect for measuring tiny things like the thickness of a thin wire.</p>
+
+        <h3>🌊 What is Diffraction?</h3>
+        <p>Normally we think of light as travelling in straight lines. But when light passes very close to an edge — or
+          is blocked by a very thin obstacle like a wire — it bends slightly around the edges. This bending is called
+          <b>diffraction</b>. The amount of bending depends on the wavelength of light and the size of the obstacle.</p>
+        <p>Think of water waves: when waves pass through a small gap, they spread out on the other side. Light does
+          exactly the same thing, just at a much smaller scale.</p>
+
+        <h3>🔬 Babinet's Principle — Why a Wire Works Like a Slit</h3>
+        <p>Here is an important idea: <b>the diffraction pattern produced by a thin wire is identical to the pattern
+            produced by a thin slit of the same width</b>. This is called <b>Babinet's Principle</b>. The wire (an
+          opaque obstacle) and the slit (an open gap) are complementary to each other — their patterns are the same in
+          intensity distribution.</p>
+        <p>This is very convenient because single-slit diffraction is well understood mathematically, and we can
+          directly apply those formulas to the wire.</p>
+
+        <h3>💡 What Does the Pattern Look Like?</h3>
+        <p>When the laser hits the wire, you see on the screen:</p>
+        <p>→ A <b>bright central band</b> at the centre (the central maxima)<br>
+          → <b>Dark bands</b> (fringes) on both sides of the bright centre — these are called minima<br>
+          → More faint bright bands beyond the dark ones (secondary maxima)<br>
+          → The pattern is symmetric on both sides</p>
+        <div class="nbox">📌 <b>b = half-width of central maxima</b> — This is the distance from the very centre of the
+          bright central band to the first dark band (first minimum) on either side. This is what you measure in the
+          experiment.</div>
+
+        <h3>📐 Deriving the Formula — Step by Step</h3>
+        <p><b>Step 1:</b> For a wire of thickness <b>d</b>, the condition for the first dark fringe (first minimum) is:
+        </p>
         <div class="fbox">d · sin θ = λ</div>
-        <h3>Working Formula</h3>
-        <p>With D = wire-to-screen distance, b = half-width of central maxima, small angle: sin θ ≈ b/D:</p>
+        <p>where θ is the angle at which the first dark fringe appears, and λ is the wavelength of light.</p>
+        <p><b>Step 2:</b> In the lab, the angles involved are very small (a few degrees at most). For small angles, we
+          can use the approximation: <b>sin θ ≈ tan θ</b>.</p>
+        <p><b>Step 3:</b> If D is the distance from the wire to the screen, and b is the half-width of the central
+          maxima (measured on the screen), then by geometry: <b>tan θ = b / D</b>.</p>
+        <p><b>Step 4:</b> Substituting sin θ ≈ b/D into the condition d·sinθ = λ:</p>
+        <div class="fbox">d · (b / D) = λ</div>
+        <p><b>Step 5:</b> Rearranging to find d (the wire thickness):</p>
         <div class="fbox">d = D × λ / b</div>
-        <div class="nbox">📌 <b>b ∝ D</b> — As screen distance increases, the entire diffraction pattern physically
-          spreads wider. You can directly see this in the simulation: move D slider and watch the fringes expand or
-          contract on the screen.</div>
-        <h3>Why d_calc varies per reading?</h3>
-        <p>Real b measurements have ±1–3% error (scale resolution). Different D readings give slightly different b →
-          slightly different d_calc. Mean of all readings gives the best estimate of true d.</p>
-        <h3>Intensity Distribution</h3>
-        <div class="fbox">I(θ) = I₀ · (sinβ/β)² &nbsp; β = πd sinθ / λ</div>
+        <p>This is the working formula. All three quantities on the right side are measurable: D with a metre scale, λ
+          is known (632.8 nm for He-Ne), and b from the diffraction pattern on the screen.</p>
+
+        <h3>📏 Why Does b Change When D Changes?</h3>
+        <p>From the formula b = Dλ/d, we can see that <b>b is directly proportional to D</b>. If you double D, b also
+          doubles. This makes physical sense — at a greater distance, the diffracted rays have more space to spread
+          apart, so the pattern is bigger. You can verify this directly in the simulation by moving the D slider.</p>
+
+        <h3>📊 Intensity Distribution — The Mathematics</h3>
+        <p>The complete intensity pattern across the screen is described by:</p>
+        <div class="fbox">I(θ) = I₀ · (sin β / β)² &nbsp;&nbsp; where β = π·d·sinθ / λ</div>
+        <p>When β = 0 (centre), the formula gives I = I₀ (maximum brightness). When β = π, 2π, 3π... the intensity
+          becomes zero — these are the dark fringes. The central bright band is the widest and brightest. Each side band
+          is progressively dimmer.</p>
+
+        <h3>🔬 Why Do d_calc Values Vary Slightly?</h3>
+        <p>In a real lab, when you measure b with a ruler, you cannot get it exactly right every single time. There is
+          always a small reading error of ±1 to 3 mm depending on the scale. Because d = Dλ/b, even a tiny change in b
+          gives a slightly different d_calc. This is not a mistake — it is normal experimental error. By taking readings
+          at multiple values of D and calculating the mean, you reduce this random error and get a more reliable answer.
+        </p>
+
+        <h3>📌 Key Relationships Summary</h3>
+        <p>• <b>Thinner wire (smaller d)</b> → larger b → wider pattern on screen</p>
+        <p>• <b>Larger screen distance (larger D)</b> → larger b → pattern spreads wider</p>
+        <p>• <b>Longer wavelength (red vs blue laser)</b> → larger b → wider pattern</p>
+        <p>• <b>b vs D graph</b> → straight line through origin, slope = λ/d → d = λ/slope</p>
       </div>
     </div>
 
     <div class="page" id="page-procedure">
       <div class="info-page">
-        <h2>PROCEDURE</h2>
+        <h2>PROCEDURE — HOW TO DO THIS EXPERIMENT</h2>
+
+        <h3>🧪 Apparatus Required</h3>
+        <p><b>He-Ne Laser</b> (λ = 6328 Å) with power supply and stand · <b>5 thin wires</b> of different (increasing)
+          thicknesses mounted on holders · <b>Optical bench</b> (a long straight rail to keep everything aligned) ·
+          <b>White screen</b> with millimetre markings · <b>Metre scale</b> for measuring D · <b>Dark room</b> for clear
+          fringe visibility</p>
+
+        <h3>⚠️ Safety First — Read Before Starting</h3>
+        <div class="nbox">🚨 <b>LASER SAFETY:</b> NEVER look directly into the laser beam or its reflection. Even a
+          brief exposure can permanently damage your eyes. Always point the laser away from people. Use the laser only
+          when it is properly mounted and directed at the screen.</div>
+
+        <h3>🔧 Real Lab Procedure — Step by Step</h3>
         <div class="step">
           <div class="sn">1</div>
-          <div class="st">Select laser source (He-Ne default). Select Wire 1. Switch ON laser.</div>
+          <div class="st"><b>Setup the laser:</b> Place the He-Ne laser on the optical bench. Connect to the power
+            supply. Switch it ON and wait 5 minutes — lasers need a warm-up period to stabilise their output. After
+            warm-up, the beam should be steady and bright red.</div>
         </div>
         <div class="step">
           <div class="sn">2</div>
-          <div class="st">Set D = 700 mm. Observe diffraction pattern on screen — central bright band, dark fringes on
-            sides. Notice pattern is narrow at small D.</div>
+          <div class="st"><b>Mount Wire 1 (thinnest):</b> Place the wire holder on the bench so the wire is exactly
+            perpendicular (vertical, at 90°) to the laser beam. The laser beam should graze right alongside the wire.
+            Check alignment by looking at the shadow — the wire should be centred in the beam.</div>
         </div>
         <div class="step">
           <div class="sn">3</div>
-          <div class="st">Click [+ Add Reading]. b is auto-calculated with small noise.</div>
+          <div class="st"><b>Place the screen at D = 1000 mm:</b> Set the white screen at a distance of 1000 mm from the
+            wire. Measure this distance carefully with a metre scale from the centre of the wire to the screen surface.
+            Mark this distance.</div>
         </div>
         <div class="step">
           <div class="sn">4</div>
-          <div class="st">Move D to 900, 1100, 1300, 1500 mm. Watch pattern SPREAD wider as D increases. Add each
-            reading.</div>
+          <div class="st"><b>Observe the diffraction pattern:</b> Turn off room lights (dark room gives clearer
+            fringes). You will see on the screen: a bright central horizontal band in the middle, flanked by dark bands
+            on both sides. These dark bands are the diffraction minima. The pattern is symmetric above and below the
+            centre.</div>
         </div>
         <div class="step">
           <div class="sn">5</div>
-          <div class="st">Click [▶ Calculate Mean d] — d_calc fills for each row, mean d shown below with σ.</div>
+          <div class="st"><b>Measure b (half-width of central maxima):</b> Using the millimetre scale on the screen (or
+            a ruler), measure the distance from the exact centre of the bright central band to the centre of the first
+            dark band on either side. This distance is called <b>b</b>. Take 2–3 measurements and average them for
+            accuracy.</div>
         </div>
         <div class="step">
           <div class="sn">6</div>
-          <div class="st">Repeat for all 5 wires. Thinner wire = larger b = wider pattern.</div>
+          <div class="st"><b>Record and calculate:</b> Write D = 1000 mm and your measured b in the observation table.
+            Calculate d = Dλ/b using λ = 6328 Å = 6.328 × 10⁻⁴ mm. This gives you d_calc for reading 1.</div>
         </div>
         <div class="step">
           <div class="sn">7</div>
-          <div class="st">Graph tab: plot b vs D — straight line, slope = λ/d → verify d independently.</div>
+          <div class="st"><b>Change D and repeat:</b> Move the screen to D = 1100 mm. Observe that the pattern has
+            spread slightly — b is now a little larger. Measure the new b, record it, and calculate d again. Repeat for
+            D = 1200, 1300, 1400 mm. You now have 5 readings for Wire 1.</div>
         </div>
-        <h3>Precautions</h3>
-        <p>1. Never look directly into the laser beam.</p>
-        <p>2. Keep room dark for clearer fringe visibility.</p>
-        <p>3. Measure b from exact centre of central bright fringe to first dark fringe.</p>
+        <div class="step">
+          <div class="sn">8</div>
+          <div class="st"><b>Calculate mean d for Wire 1:</b> Add up all 5 values of d_calc and divide by 5. This is
+            your best estimate of Wire 1's thickness: d̄ = (d₁ + d₂ + d₃ + d₄ + d₅) / 5</div>
+        </div>
+        <div class="step">
+          <div class="sn">9</div>
+          <div class="st"><b>Repeat for all 5 wires:</b> Remove Wire 1 and mount Wire 2. Repeat steps 3–8 for each wire.
+            Notice: thicker wires produce narrower patterns (smaller b), thinner wires produce wider patterns (larger
+            b).</div>
+        </div>
+        <div class="step">
+          <div class="sn">10</div>
+          <div class="st"><b>Plot the graph:</b> For each wire, plot b (y-axis) vs D (x-axis). You should get a straight
+            line. The slope of this line = λ/d. From slope, d = λ/slope. This is an independent verification of your
+            result.</div>
+        </div>
+
+        <h3>💻 How to Use This Simulation</h3>
+        <div class="step">
+          <div class="sn">i</div>
+          <div class="st"><b>Select a Laser</b> from the top-left panel (He-Ne is default, λ = 632.8 nm). The laser beam
+            colour on the canvas will change accordingly.</div>
+        </div>
+        <div class="step">
+          <div class="sn">ii</div>
+          <div class="st"><b>Select a Wire</b> (W1 to W5, thinnest to thickest). The wire thickness is shown below each
+            button.</div>
+        </div>
+        <div class="step">
+          <div class="sn">iii</div>
+          <div class="st"><b>Set D</b> using the slider (700 to 1500 mm). Watch the diffraction pattern on the screen
+            EXPAND as you increase D — this is exactly what happens in a real lab.</div>
+        </div>
+        <div class="step">
+          <div class="sn">iv</div>
+          <div class="st"><b>Turn ON the Laser</b> by clicking the red button. The animation starts, the beam glows, and
+            the diffraction pattern appears on screen with b marked by arrows.</div>
+        </div>
+        <div class="step">
+          <div class="sn">v</div>
+          <div class="st"><b>Add a Reading</b> by clicking [＋ Add Reading]. The current D and b (with small realistic
+            noise added) are recorded in the observation table on the right. The d_calc column shows "—" until you
+            calculate.</div>
+        </div>
+        <div class="step">
+          <div class="sn">vi</div>
+          <div class="st"><b>Take 5 readings</b> by changing D to 700, 900, 1100, 1300, 1500 mm and clicking Add Reading
+            each time. Each reading gives a slightly different b (due to noise), hence a slightly different d_calc.
+          </div>
+        </div>
+        <div class="step">
+          <div class="sn">vii</div>
+          <div class="st"><b>Click [▶ Calculate Mean d]</b> — all d_calc values fill in instantly, and the mean d with
+            standard deviation σ appears at the bottom of each wire's table.</div>
+        </div>
+        <div class="step">
+          <div class="sn">viii</div>
+          <div class="st"><b>Switch wires</b> and repeat. Or use [📋 Load Demo Readings] to instantly fill all 5 wires
+            with sample data and then calculate.</div>
+        </div>
+        <div class="step">
+          <div class="sn">ix</div>
+          <div class="st"><b>Go to Graph tab</b> → click Refresh Graph → see the b vs D straight lines for each wire and
+            the slope-based d calculation.</div>
+        </div>
+
+        <h3>📋 What to Write in Your Lab Record</h3>
+        <p><b>Aim:</b> To determine the thickness of a thin wire using He-Ne laser diffraction.</p>
+        <p><b>Formula:</b> d = Dλ/b, where D = wire-to-screen distance, λ = wavelength of laser, b = half-width of
+          central maxima.</p>
+        <p><b>Observation Table:</b> For each wire: Sr. No. | D (mm) | b (mm) | d = Dλ/b (mm) | Mean d (mm)</p>
+        <p><b>Result:</b> The mean thickness of Wire 1 = ___ mm, Wire 2 = ___ mm, and so on.</p>
+        <p><b>Precautions:</b> (1) Never look into the laser beam. (2) Keep room dark. (3) Measure b from exact centre
+          of bright fringe to first dark fringe. (4) Do not disturb the laser or wire position during readings. (5) Use
+          mean of multiple readings to reduce error.</p>
       </div>
     </div>
 
