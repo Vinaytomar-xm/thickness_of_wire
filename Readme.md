@@ -283,4 +283,4 @@ Free to use for educational purposes.
 Built with HTML5 Canvas + Chart.js + Vanilla JS.  
 No frameworks. No build tools. Just open and run.
 
-## made with ❤️ by [Vinay singh Tomar]
+## made with ❤️ by Vinay Singh Tomar 
