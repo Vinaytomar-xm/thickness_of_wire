@@ -265,12 +265,14 @@ To make it work **fully offline**, download these and replace the CDN links with
 | Wire 3 | 0.24543 mm | ≈ 2.58 mm |
 | Wire 4 | 0.35000 mm | ≈ 1.81 mm |
 | Wire 5 | 0.48000 mm | ≈ 1.32 mm |
+| Wire 0 | 0.00000 mm | No diffraction (b → ∞) |
+| Wire 6 |  0.60000 mm | ≈ 1.06 mm (extra thick for testing) |
 
 ---
 
 ## 👨‍🎓 Made For
 
-- B.Tech / B.Sc Physics students learning optics
+- B.Tech students learning optics
 - Virtual lab assignments and viva preparation  
 - Self-study: theory + simulation + quiz in one place
 - College practical records (use Load Demo → Calculate → copy values)
