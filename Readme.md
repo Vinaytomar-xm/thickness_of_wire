@@ -1,288 +1,164 @@
-# 🔬 Virtual Optics Lab — Thickness of Wire using He-Ne Laser Diffraction
+# Experiment 1 — Thickness of Wire using Laser Diffraction
 
-> **Experiment 1** · Physics Virtual Lab · Medicaps University  
-> A fully interactive, browser-based simulation for determining wire thickness using laser diffraction.
-
----
-
-## 📋 Project Summary
-
-This is a **single-file HTML virtual laboratory** that simulates the real physics experiment of determining the thickness of a thin wire using He-Ne laser diffraction (Babinet's Principle). Students can interact with all parameters, observe real-time diffraction patterns, record observations, calculate results, and verify them via graphs — all in the browser, with zero installation.
+> **An interactive physics simulation** — measure wire thickness (including human hair) using laser diffraction. Built with vanilla HTML/CSS/JS. No install needed.
 
 ---
 
-## ✨ Features
+## 🌐 Live Demo
+
+**[▶ Open Simulation](https://vinaytomar-xm.github.io/thickness_wire/)**
+
+---
+
+## 🔗 Links
+
+| | |
+|---|---|
+| **LinkedIn** | [Vinay Singh Tomar](https://linkedin.com/in/vinay-singh-tomar-5b65b9377) |
+| **GitHub** | [Vinaytomar-xm](https://github.com/Vinaytomar-xm) |
+
+---
+
+## 📌 About
+
+A fully browser-based physics lab simulation. Uses **single-slit laser diffraction** via **Babinet's Principle** to calculate wire thickness from the fringe pattern on a screen. Supports 4 laser wavelengths, 8 wire specimens (including human hair), live fringe animation, and a continuous wire-diameter slider.
+
+---
+
+## ⚙️ Physics Formula
+
+```
+d = D × λ / b
+```
+
+| Symbol | Meaning |
+|--------|---------|
+| `d` | Wire thickness (calculated) |
+| `D` | Wire-to-screen distance (mm) |
+| `λ` | Laser wavelength (nm) |
+| `b` | Half-width of central maxima (mm) |
+
+---
+
+## 🔦 Laser Sources
+
+| Laser | Wavelength | Colour |
+|-------|-----------|--------|
+| He-Ne | 632.8 nm | 🔴 Red |
+| Green | 532.0 nm | 🟢 Green |
+| Blue  | 473.0 nm | 🔵 Blue |
+| Violet | 405.0 nm | 🟣 Violet |
+
+---
+
+## 🧪 Wire Specimens
+
+| Wire | Description | d (mm) | Valid D Range |
+|------|-------------|--------|---------------|
+| W0 | Thin wire | 0.05000 | 700 – 1300 mm |
+| W1 | Wire 1 | 0.10547 | 700 – 1500 mm |
+| W2 | Wire 2 | 0.18000 | 700 – 1500 mm |
+| W3 | Wire 3 | 0.24543 | 700 – 1500 mm |
+| W4 | Wire 4 | 0.35000 | 700 – 1500 mm |
+| W5 | Wire 5 | 0.48000 | 700 – 1500 mm |
+| W6 | Thick wire | 1.50000 | 900 – 1500 mm |
+| **W7** | **Human Hair** | **0.07000** | 700 – 1500 mm |
+
+> W0 overflows screen at D ≥ 1400 mm. W6 fringes become unresolvable at D ≤ 800 mm. Both show the **live limit transition** — pattern visible until the threshold, warning appears only when crossed.
+
+---
+
+## 🖥️ Key Features
 
 | Feature | Description |
-|---|---|
-| **4 Laser Sources** | He-Ne (632.8 nm), Green (532 nm), Blue (473 nm), Violet (405 nm) — beam colour changes live |
-| **5 Wires** | Increasing thickness from W1 (0.105 mm) to W5 (0.480 mm) |
-| **Live Canvas Animation** | Real-time laser beam, wire, screen, diffraction pattern via HTML Canvas API |
-| **Diffraction Pattern Spreading** | Pattern physically expands as D increases — matches real lab behaviour |
-| **Auto b Calculation** | b = Dλ/d with ±2.5% seeded noise for realistic variation |
-| **Observation Tables** | 5 separate tables (one per wire), d_calc shown only after Calculate is clicked |
-| **Mean & Std Dev** | σ calculated across all readings per wire on Calculate click |
-| **Graph (b vs D)** | Chart.js scatter plot with linear regression, slope = λ/d verified |
-| **Theory Tab** | Complete beginner-friendly theory from scratch |
-| **Procedure Tab** | Real lab + simulation steps, safety, lab record format |
-| **Quiz Tab** | 8 MCQs with instant feedback and score |
-| **Laser Lock** | Add Reading / Calculate locked until Laser is ON |
-| **Demo Data** | One-click load of all 5 wires × 5 D values |
-| **No Installation** | Pure HTML/CSS/JS, open directly in browser |
+|---------|-------------|
+| **Live diffraction pattern** | sinc² intensity, expands as D increases |
+| **Wire d slider** | Vary wire diameter 0.02–2.00 mm continuously — watch fringes widen/narrow in real time, just like the D slider |
+| **Dynamic limits** | W0 and W6 show real pattern until threshold D is crossed, then warning appears |
+| **4 laser sources** | He-Ne, Green, Blue, Violet — pattern colour + λ change live |
+| **Measurement noise** | ±2.5% seeded variation in b → different d_calc per D → realistic mean |
+| **Observation table** | Records b and d_calc per reading, computes mean ± σ |
+| **Laser lock** | Add/Calculate disabled until laser is ON |
+| **b vs D graph** | Chart.js scatter plot with slope → d calculation |
+| **Theory tab** | Full derivation, limitations with exact thresholds, Human Hair explanation |
+| **Procedure tab** | Real lab steps + simulation guide |
+| **Quiz tab** | 8 MCQs with instant feedback |
 
 ---
 
-## 🛠️ Tech Stack
+## 🎯 Wire Diameter Slider — How It Works
 
-| Layer | Technology | Purpose |
-|---|---|---|
-| **Structure** | HTML5 | Single-file app, all tabs, panels, tables |
-| **Styling** | CSS3 | Dark theme, CSS variables, Grid, Flexbox, animations |
-| **Fonts** | Google Fonts | Orbitron (headers), Rajdhani (body), Share Tech Mono (data) |
-| **Physics Rendering** | HTML5 Canvas API | Laser beam, wire, screen, diffraction pattern (pixel-by-pixel) |
-| **Graphing** | Chart.js 4.4.1 (CDN) | b vs D scatter plot with linear regression |
-| **Logic** | Vanilla JavaScript (ES6+) | All physics, UI state, calculations |
-| **No frameworks** | — | No React, Vue, Angular, Node — pure browser |
+The **Wire d slider** (0.02 → 2.00 mm) continuously varies the effective wire thickness:
+
+- **Decrease d** → b = Dλ/d gets larger → fringes spread wider → eventually overflows (too thin limit)
+- **Increase d** → b gets smaller → fringes compress → eventually unresolvable (too thick limit)
+- When slider differs from the selected wire button's d, a **CUSTOM** tag appears
+- Clicking any wire button resets the slider to that wire's exact d
+- This lets you see both limitation thresholds live in one sweep
 
 ---
 
-## 🔧 JavaScript Functions Reference
+## 🦱 Human Hair (W7) — Physics
 
-### Physics Functions
-| Function | Parameters | Returns | Description |
-|---|---|---|---|
-| `getLambdaMM()` | — | `number` (mm) | Returns active laser wavelength in mm |
-| `getBTrue(D, wi)` | D: mm, wi: wire index | `number` (mm) | Ideal b = Dλ/d (no noise) |
-| `getBMeasured(D, wi)` | D: mm, wi: wire index | `number` (mm) | b with ±2.5% seeded noise |
-| `getDcalc(D, b)` | D: mm, b: mm | `number` (mm) | d = Dλ/b |
-| `sinc2(x)` | x: beta angle | `number` 0–1 | Sinc² function for intensity: (sinx/x)² |
-| `seededRand(seed)` | seed: number | `number` 0–1 | Reproducible pseudo-random (sin-based) |
-
-### UI Builder Functions
-| Function | Description |
-|---|---|
-| `buildLaserGrid()` | Creates 4 laser selector buttons with colour coding |
-| `buildWireGrid()` | Creates 5 wire selector buttons |
-| `selectLaser(i)` | Switches active laser, updates beam colour, header, readout |
-| `selectWire(i)` | Switches active wire, updates readout |
-| `updateReadout()` | Refreshes all live parameter display values |
-| `onDChange()` | Called on D slider input — updates D_mm, readout, triggers flash |
-
-### Canvas / Drawing Functions
-| Function | Description |
-|---|---|
-| `resizeCanvas()` | Sets canvas dimensions to parent size (with zero-guard), calls draw() |
-| `draw(W, H)` | Master draw function — grid, setup, diffraction, flash overlay |
-| `drawGrid(W, H)` | Draws background dot-grid |
-| `drawSetup(W, H)` | Draws laser box, beam, wire, screen, D arrow |
-| `drawDiffractionScreen(W, H)` | Pixel-by-pixel sinc² intensity rendering with fixed mmPerPx scale |
-| `animLoop()` | requestAnimationFrame loop — runs when laser is ON |
-
-### Data / Experiment Functions
-| Function | Description |
-|---|---|
-| `addReading()` | Saves current {D, b_true, b_meas, d_calc:null} to readings[activeWire] |
-| `calculateAll()` | Computes d_calc = Dλ/b_meas for every reading, then mean + σ per wire |
-| `clearAll()` | Clears all readings arrays, re-renders empty tables |
-| `loadDemo()` | Fills all 5 wires with D = [700,900,1100,1300,1500] mm sample data |
-| `renderTables()` | Re-renders all 5 wire observation tables from readings[] state |
-
-### Graph Functions
-| Function | Description |
-|---|---|
-| `refreshGraph()` | Destroys old Chart.js instance, creates new scatter plot from readings |
-| `showPage(id, el)` | Tab switcher — shows correct .page div, activates .ntab |
-
-### Quiz Functions
-| Function | Description |
-|---|---|
-| `buildQuiz()` | Renders all 8 MCQ questions from QUIZ array |
-| `selectQ(i, j)` | Records answer selection, highlights border |
-| `submitQuiz()` | Grades all answers, shows correct/wrong, reveals feedback |
-| `resetQuiz()` | Clears selections, re-renders quiz |
-
-### Helpers
-| Function | Description |
-|---|---|
-| `hexToRgb(hex)` | Converts #rrggbb → "r,g,b" string for rgba() |
-| `hexToRgbArr(hex)` | Converts #rrggbb → [r,g,b] array for Canvas pixel data |
-
----
-
-## 📐 Physics Behind the Simulation
+Human hair thickness is typically **60–100 µm**. Modelled here as **d = 70 µm = 0.07 mm**.
 
 ```
-Experiment:  He-Ne Laser → Thin Wire → Screen
-Principle:   Babinet's Principle (wire ≡ complementary slit)
-
-Condition for 1st dark fringe:
-    d · sin θ = λ
-
-Small angle approximation (sin θ ≈ tan θ = b/D):
-    d · (b/D) = λ
-
-Working formula:
-    d = D × λ / b
-
-Intensity distribution:
-    I(θ) = I₀ · (sin β / β)²
-    where β = π · d · sin θ / λ
-
-Diffraction scaling:
-    b ∝ D        (larger distance → wider pattern)
-    b ∝ λ        (longer wavelength → wider pattern)
-    b ∝ 1/d      (thicker wire → narrower pattern)
-
-Graph:
-    b vs D → straight line through origin
-    Slope = λ/d  →  d = λ / slope
+At D = 1000 mm, He-Ne laser (λ = 632.8 nm):
+b = D × λ / d = 1000 × 0.0006328 / 0.07 = 9.04 mm
 ```
+
+This is wide enough to measure clearly on a screen. By Babinet's Principle, the diffraction pattern of hair is identical to a slit of the same width — the fringe positions are exact. Hair is one of the classic demonstration objects for this experiment.
+
+---
+
+## 🚀 How to Use
+
+1. Open `index.html` locally **or** visit the [Live Demo](https://vinaytomar-xm.github.io/thickness_wire/)
+2. Select a **laser source**
+3. Select a **wire** (try W7 for human hair)
+4. Turn the **Laser ON**
+5. Move **D slider** → watch fringes expand/compress
+6. Move **Wire d slider** → watch fringes widen (thinner) or narrow (thicker)
+7. Click **＋ Add Reading** at 5 different D values
+8. Click **▶ Calculate Mean d** → get d̄ ± σ
+9. Visit **Graph** tab → see b vs D straight line → slope = λ/d
 
 ---
 
 ## 📁 File Structure
 
 ```
-laser_lab_final.html     ← Complete virtual lab (single file, ~870 lines)
-README.md                ← This file
-```
-
-Everything is self-contained in one HTML file. No build step, no dependencies to install, no server required.
-
----
-
-## 🚀 Deployment Guide
-
-### Option 1: Open Directly (Simplest)
-```
-1. Download laser_lab_final.html
-2. Double-click the file
-3. It opens in your browser — done.
-```
-Works on Chrome, Firefox, Edge, Safari. Requires internet for Google Fonts and Chart.js CDN.
-
----
-
-### Option 2: GitHub Pages (Free, Shareable URL)
-
-```bash
-# Step 1: Create a new GitHub repository
-# Go to https://github.com/new
-# Repository name: virtual-optics-lab
-# Make it Public
-
-# Step 2: Upload the file
-# Rename laser_lab_final.html → index.html
-# Upload index.html to the repository
-
-# Step 3: Enable GitHub Pages
-# Go to repository → Settings → Pages
-# Source: Deploy from branch → main → / (root)
-# Click Save
-
-# Step 4: Your lab is live at:
-# https://yourusername.github.io/virtual-optics-lab/
+index.html     ← Main HTML (tabs, panels, canvas)
+script.js      ← Physics engine + UI logic
+styles.css     ← Dark theme, layout, components
+Readme.md      ← This file
+vinay.jpeg     ← OG image
+vinay2.jpeg    ← Favicon
 ```
 
 ---
 
-### Option 3: Netlify Drop (Instant, No Account Needed)
+## 🛠️ Tech Stack
 
-```
-1. Go to https://app.netlify.com/drop
-2. Rename the file to index.html
-3. Drag and drop the file onto the page
-4. Netlify gives you a live URL like: https://random-name.netlify.app
-5. Share the URL with anyone
-```
+| Technology | Usage |
+|-----------|-------|
+| HTML5 Canvas | Laser setup + diffraction animation |
+| Vanilla JS | Physics, UI state, rendering |
+| Chart.js (CDN) | b vs D graph |
+| CSS3 | Dark theme, grid layout, animations |
 
----
-
-### Option 4: Vercel (CLI Deploy)
-
-```bash
-# Install Vercel CLI
-npm install -g vercel
-
-# Create a folder and put index.html inside
-mkdir virtual-optics-lab
-cp laser_lab_final.html virtual-optics-lab/index.html
-cd virtual-optics-lab
-
-# Deploy
-vercel
-
-# Follow prompts → get a live URL
-```
+Zero frameworks. Zero build tools. One CDN dependency (Chart.js).
 
 ---
 
-### Option 5: Self-Hosted / College Server
+## ⚠️ Lab Precautions
 
-```bash
-# If your college has a web server (Apache/Nginx):
-# Upload the file to /var/www/html/ or equivalent
-# Access via the server's IP or domain
-
-# Using Python for quick local server:
-python -m http.server 8080
-# Then open: http://localhost:8080/laser_lab_final.html
-```
+1. Never look into the laser beam — permanent eye damage risk
+2. Dark room for clear fringe visibility
+3. Measure b from exact centre of bright fringe to first dark fringe
+4. Do not disturb laser/wire position during readings
+5. Take mean of ≥ 5 readings to reduce random error
 
 ---
 
-### Option 6: Embed in Google Sites / Notion / LMS
-
-```html
-<!-- For any platform that supports iframe embedding: -->
-<iframe 
-  src="https://yourusername.github.io/virtual-optics-lab/" 
-  width="100%" 
-  height="700px"
-  frameborder="0">
-</iframe>
-```
-
----
-
-## 🌐 CDN Dependencies (Internet Required)
-
-| Library | Version | CDN URL | Purpose |
-|---|---|---|---|
-| Chart.js | 4.4.1 | cdnjs.cloudflare.com | b vs D graph plotting |
-| Google Fonts | — | fonts.googleapis.com | Orbitron, Rajdhani, Share Tech Mono |
-
-To make it work **fully offline**, download these and replace the CDN links with local paths.
-
----
-
-## 🧪 Wire Data Reference
-
-| Wire | Actual d (mm) | b at D=1000mm, He-Ne |
-|---|---|---|
-| Wire 1 | 0.10547 mm | ≈ 5.99 mm |
-| Wire 2 | 0.18000 mm | ≈ 3.51 mm |
-| Wire 3 | 0.24543 mm | ≈ 2.58 mm |
-| Wire 4 | 0.35000 mm | ≈ 1.81 mm |
-| Wire 5 | 0.48000 mm | ≈ 1.32 mm |
-| Wire 0 | 0.00000 mm | No diffraction (b → ∞) |
-| Wire 6 |  0.60000 mm | ≈ 1.06 mm (extra thick for testing) |
-
----
-
-## 👨‍🎓 Made For
-
-- B.Tech students learning optics
-- Virtual lab assignments and viva preparation  
-- Self-study: theory + simulation + quiz in one place
-- College practical records (use Load Demo → Calculate → copy values)
-
----
-
-## 📄 License
-
-Free to use for educational purposes.  
-Built with HTML5 Canvas + Chart.js + Vanilla JS.  
-No frameworks. No build tools. Just open and run.
-
-## made with ❤️ by Vinay Singh Tomar 
+*Made with ❤️ by Vinay Singh Tomar*
