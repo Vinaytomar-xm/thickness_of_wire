@@ -133,7 +133,7 @@ script.js      ← Physics engine + UI logic
 styles.css     ← Dark theme, layout, components
 Readme.md      ← This file
 vinay.jpeg     ← OG image
-vinay2.jpeg    ← Favicon
+vinay2.jpeg    ← Favicon img
 ```
 
 ---
