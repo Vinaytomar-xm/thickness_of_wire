@@ -9,11 +9,11 @@ let activeLaser = 0;
 function getLambdaMM() { return LASERS[activeLaser].lambda_nm * 1e-6; }
 
 // ══════════════ WIRES ══════════════
-// W0 = ultra-thin (always overflows), W1–W5 = normal range, W6 = ultra-thick (always unresolvable)
+// W0 = thin (overflows at D≥1400), W1–W5 = always valid, W6 = thick (unresolvable at D≤800), W7 = Human Hair
 const WIRES = [
   {
-    id: 0, label: 'W0', name: 'Wire 0', d: 0.02000, color: '#ff6680', glow: 'rgba(255,102,128,', limit: 'thin',
-    limitNote: 'Ultra-thin wire — b is always too large to fit on screen at any D in this setup.'
+    id: 0, label: 'W0', name: 'Wire 0', d: 0.05000, color: '#ff6680', glow: 'rgba(255,102,128,', limit: 'thin',
+    limitNote: 'Very thin wire — b overflows screen when D is too large (D ≥ 1400 mm).'
   },
   { id: 1, label: 'W1', name: 'Wire 1', d: 0.10547, color: '#00ffe0', glow: 'rgba(0,255,224,', limit: null, limitNote: '' },
   { id: 2, label: 'W2', name: 'Wire 2', d: 0.18000, color: '#00aaff', glow: 'rgba(0,170,255,', limit: null, limitNote: '' },
@@ -21,19 +21,26 @@ const WIRES = [
   { id: 4, label: 'W4', name: 'Wire 4', d: 0.35000, color: '#ff4499', glow: 'rgba(255,68,153,', limit: null, limitNote: '' },
   { id: 5, label: 'W5', name: 'Wire 5', d: 0.48000, color: '#b0ff40', glow: 'rgba(176,255,64,', limit: null, limitNote: '' },
   {
-    id: 6, label: 'W6', name: 'Wire 6', d: 2.50000, color: '#ff8833', glow: 'rgba(255,136,51,', limit: 'thick',
-    limitNote: 'Ultra-thick wire — b is always too small to resolve at any D in this setup.'
+    id: 6, label: 'W6', name: 'Wire 6', d: 1.50000, color: '#ff8833', glow: 'rgba(255,136,51,', limit: 'thick',
+    limitNote: 'Thick wire — fringes unresolvable when D is too small (D ≤ 800 mm).'
   },
+  { id: 7, label: 'W7', name: 'Human Hair', d: 0.07000, color: '#ffdd99', glow: 'rgba(255,221,153,', limit: null, limitNote: '' },
 ];
 let activeWire = 0;
 let D_mm = 1000;
+let customWireD = WIRES[0].d;   // live wire diameter, overrides selected wire's d
 let laserOn = false;
 let animId = null;
 let flashAlpha = 0;
-const readings = [[], [], [], [], [], [], []];
+const readings = [[], [], [], [], [], [], [], []];
 
 // ══════════════ PHYSICS ══════════════
-function getBTrue(D, wi) { return (D * getLambdaMM()) / WIRES[wi].d; }
+// Returns the effective d for wire wi — customWireD for active wire, actual d for others
+function getEffectiveD(wi) {
+  return (wi === activeWire) ? customWireD : WIRES[wi].d;
+}
+
+function getBTrue(D, wi) { return (D * getLambdaMM()) / getEffectiveD(wi); }
 
 function seededRand(seed) {
   const x = Math.sin(seed + 1) * 43758.5453123;
@@ -96,7 +103,15 @@ function buildWireGrid() {
 }
 function selectWire(i) {
   activeWire = i;
+  customWireD = WIRES[i].d;
   document.querySelectorAll('.wb').forEach((b, j) => b.classList.toggle('active', j === i));
+  // Sync the d slider
+  const slWd = document.getElementById('slWd');
+  if (slWd) {
+    slWd.value = customWireD;
+    document.getElementById('vWd').textContent = customWireD.toFixed(4) + ' mm';
+    document.getElementById('wdCustomTag').style.display = 'none';
+  }
   updateReadout();
 }
 
@@ -120,6 +135,16 @@ function updateReadout() {
 
 function onDChange() {
   D_mm = parseInt(document.getElementById('slD').value);
+  updateReadout();
+  if (laserOn) flashAlpha = 1.0;
+}
+
+function onWireDChange() {
+  customWireD = parseFloat(document.getElementById('slWd').value);
+  document.getElementById('vWd').textContent = customWireD.toFixed(4) + ' mm';
+  // Show "CUSTOM" tag if differs from wire's actual d
+  const isCustom = Math.abs(customWireD - WIRES[activeWire].d) > 0.0001;
+  document.getElementById('wdCustomTag').style.display = isCustom ? 'inline' : 'none';
   updateReadout();
   if (laserOn) flashAlpha = 1.0;
 }
@@ -234,19 +259,19 @@ function drawSetup(W, H) {
 function getWireLimit(patH) {
   const w = WIRES[activeWire];
   const safePatH = (patH > 10) ? patH : 400;
-  // Anchor scale on Wire 1 (first normal wire, index 1), not W0
+  // Anchor scale on W1 (index 1, d=0.10547mm) at D=700
   const D_ref = 700;
   const b_ref = (D_ref * getLambdaMM()) / WIRES[1].d;
   const mmPerPx = (9 * b_ref) / safePatH;
   const b_now = getBTrue(D_mm, activeWire);
   const b_px = b_now / mmPerPx;
 
-  // Extreme wires are ALWAYS out of range — check flag first
-  if (w.limit === 'thin' || b_px >= safePatH * 0.46) {
-    const suggestD = Math.max(700, Math.floor(D_mm * 0.4));
+  // Too thin — central maxima overflows screen (b_px too large)
+  if (b_px >= safePatH * 0.46) {
+    const suggestD = Math.max(700, Math.floor(D_mm * 0.6));
     return {
       ok: false, type: 'thin', b_mm: b_now, b_px,
-      msg: `⚠  Wire Too Thin — Pattern Overflows Screen`,
+      msg: `⚠  Pattern Overflows Screen — Reduce D`,
       lines: [
         `Wire: ${w.name}  |  d = ${w.d.toFixed(4)} mm`,
         `b = ${b_now.toFixed(2)} mm  →  too large to fit on screen`,
@@ -254,15 +279,16 @@ function getWireLimit(patH) {
         `Dark fringes fall outside — b cannot be measured.`,
         ``,
         `✦ Reduce D to ≤ ${suggestD} mm,  or`,
-        `✦ Use a thicker wire (W2 / W3 / W4 / W5 / W6)`
+        `✦ Use a thicker wire (W1 / W2 / W3 / W4 / W5 / W6)`
       ]
     };
   }
-  if (w.limit === 'thick' || b_px < 5) {
-    const suggestD = Math.min(1500, Math.ceil(D_mm * 2.5));
+  // Too thick — fringes too narrow to resolve (b_px too small)
+  if (b_px < 5) {
+    const suggestD = Math.min(1500, Math.ceil(D_mm * 1.8));
     return {
       ok: false, type: 'thick', b_mm: b_now, b_px,
-      msg: `⚠  Wire Too Thick — Fringes Unresolvable`,
+      msg: `⚠  Fringes Unresolvable — Increase D`,
       lines: [
         `Wire: ${w.name}  |  d = ${w.d.toFixed(4)} mm`,
         `b = ${b_now.toFixed(3)} mm  →  too small to resolve`,
@@ -270,7 +296,7 @@ function getWireLimit(patH) {
         `The fringe spacing is below instrument resolution.`,
         ``,
         `✦ Increase D to ≥ ${suggestD} mm,  or`,
-        `✦ Use a thinner wire (W0 / W1 / W2 / W3)`
+        `✦ Use a thinner wire (W0 / W1 / W2 / W3 / W7)`
       ]
     };
   }
@@ -538,18 +564,18 @@ function addReading() {
   const patH = Math.max(100, Math.floor(canH * 0.90));
   const limit = getWireLimit(patH);
 
-  // For extreme (limit) wires — always show message and block
-  if (w.limit || !limit.ok) {
-    const isThin = (w.limit === 'thin') || (limit.type === 'thin');
+  // Block only when pattern is dynamically out of range
+  if (!limit.ok) {
+    const isThin = limit.type === 'thin';
     const icon = isThin ? '↕' : '●';
     const b_val = limit.b_mm.toFixed(3);
     const fix = isThin
-      ? `Try reducing D to ≤ ${Math.max(700, Math.floor(D_mm * 0.4))} mm, or select a thicker wire`
-      : `Try increasing D to ≥ ${Math.min(1500, Math.ceil(D_mm * 2.5))} mm, or select a thinner wire`;
+      ? `Reduce D to ≤ ${Math.max(700, Math.floor(D_mm * 0.6))} mm to bring pattern into range`
+      : `Increase D to ≥ ${Math.min(1500, Math.ceil(D_mm * 1.8))} mm to resolve fringes`;
     showToast(
       `<b>${icon} Cannot Record — Pattern Not Measurable</b><br>` +
       `${w.name}  (d = ${w.d.toFixed(4)} mm)&nbsp;·&nbsp;b = ${b_val} mm<br>` +
-      `${isThin ? 'Central maxima overflows screen — b cannot be measured.' : 'Fringes too narrow to resolve on screen.'}<br>` +
+      `${isThin ? 'Central maxima overflows screen at this D — reduce D.' : 'Fringes too narrow to resolve at this D — increase D.'}<br>` +
       `<span style="opacity:0.75;font-size:10px;">✦ ${fix}</span>`,
       isThin ? 'warn' : 'error'
     );
@@ -557,7 +583,7 @@ function addReading() {
     return;
   }
 
-  // Normal wire — record reading
+  // Valid reading — record
   const wi = activeWire;
   const b_true = getBTrue(D_mm, wi);
   const b_meas = parseFloat(getBMeasured(D_mm, wi).toFixed(4));
@@ -597,11 +623,20 @@ function clearAll() { readings.forEach(a => a.length = 0); renderTables(); }
 
 // ══════════════ LOAD DEMO ══════════════
 function loadDemo() {
-  const Dvals = [700, 900, 1100, 1300, 1500];
+  // Valid D ranges per wire type (based on dynamic limit thresholds)
+  // W0 (d=0.05): overflows at D≥1400 → use D=700,900,1100,1300
+  // W6 (d=1.5):  unresolvable at D≤800 → use D=900,1100,1300,1500
+  // All others + W7: full range D=700,900,1100,1300,1500
+  const DvalsDefault = [700, 900, 1100, 1300, 1500];
+  const DvalsW0 = [700, 900, 1100, 1300];
+  const DvalsW6 = [900, 1100, 1300, 1500];
+
   readings.forEach((arr, wi) => {
     arr.length = 0;
-    // Skip extreme wires W0 (ultra-thin) and W6 (ultra-thick)
-    if (WIRES[wi].limit) return;
+    const w = WIRES[wi];
+    const Dvals = w.limit === 'thin' ? DvalsW0
+      : w.limit === 'thick' ? DvalsW6
+        : DvalsDefault;
     Dvals.forEach(D => {
       const b_true = getBTrue(D, wi);
       const b_meas = parseFloat(getBMeasured(D, wi).toFixed(4));
@@ -630,28 +665,12 @@ function renderTables() {
     hdr.innerHTML = `<span style="color:${w.color};font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;">${w.name} &nbsp;[${l.name}, λ=${l.lambda_nm}nm]</span>`;
     block.appendChild(hdr);
 
-    // Table body — for limit wires show limitation msg, else normal rows
+    // Table body
     const tWrap = document.createElement('div');
     let tbody;
 
     if (arr.length === 0) {
-      if (w.limit) {
-        // Limitation message row instead of "No readings"
-        const isThin = w.limit === 'thin';
-        const icon = isThin ? '↕' : '●';
-        const reason = isThin
-          ? 'b = Dλ/d is too large — central maxima overflows the screen at every D. b cannot be measured.'
-          : 'b = Dλ/d is too small — dark fringes are unresolvable at every D. Readings cannot be taken.';
-        const fix = isThin
-          ? 'Wire is extremely thin (d = ' + w.d.toFixed(4) + ' mm). Use W1–W5 for valid readings.'
-          : 'Wire is extremely thick (d = ' + w.d.toFixed(4) + ' mm). Use W1–W5 for valid readings.';
-        tbody = `<tr><td colspan="4" style="padding:12px 10px;text-align:left;">
-          <div style="color:${w.color};font-family:'Share Tech Mono',monospace;font-size:10px;font-weight:700;margin-bottom:5px;">${icon} Limitation — Readings Cannot Be Taken</div>
-          <div style="color:rgba(180,200,220,0.65);font-family:'Share Tech Mono',monospace;font-size:9px;line-height:1.7;">${reason}<br><span style="color:rgba(180,200,220,0.4);">${fix}</span></div>
-        </td></tr>`;
-      } else {
-        tbody = `<tr><td colspan="4" style="padding:8px;color:var(--muted);font-family:'Share Tech Mono',monospace;font-size:9px;">No readings. Select wire and add.</td></tr>`;
-      }
+      tbody = `<tr><td colspan="4" style="padding:8px;color:var(--muted);font-family:'Share Tech Mono',monospace;font-size:9px;">No readings. Select wire, set D in valid range, and add.</td></tr>`;
     } else {
       tbody = arr.map((r, i) => `<tr>
           <td>${i + 1}</td>
@@ -666,8 +685,8 @@ function renderTables() {
     tWrap.innerHTML = `<table class="obs"><thead><tr><th>Sr.</th><th>D (mm)</th><th>b (mm)</th><th>d_calc (mm)</th></tr></thead><tbody>${tbody}</tbody></table>`;
     block.appendChild(tWrap);
 
-    // Mean row — only for non-limit wires (limit wires have no readings)
-    if (!w.limit) {
+    // Mean row — all wires
+    {
       const allDone = arr.length > 0 && arr.every(r => r.d_calc !== null);
       let meanText = '—', errText = '';
       if (allDone) {
