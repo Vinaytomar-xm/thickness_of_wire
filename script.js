@@ -28,19 +28,13 @@ const WIRES = [
 ];
 let activeWire = 0;
 let D_mm = 1000;
-let customWireD = WIRES[0].d;   // live wire diameter, overrides selected wire's d
 let laserOn = false;
 let animId = null;
 let flashAlpha = 0;
 const readings = [[], [], [], [], [], [], [], []];
 
 // ══════════════ PHYSICS ══════════════
-// Returns the effective d for wire wi — customWireD for active wire, actual d for others
-function getEffectiveD(wi) {
-  return (wi === activeWire) ? customWireD : WIRES[wi].d;
-}
-
-function getBTrue(D, wi) { return (D * getLambdaMM()) / getEffectiveD(wi); }
+function getBTrue(D, wi) { return (D * getLambdaMM()) / WIRES[wi].d; }
 
 function seededRand(seed) {
   const x = Math.sin(seed + 1) * 43758.5453123;
@@ -103,15 +97,7 @@ function buildWireGrid() {
 }
 function selectWire(i) {
   activeWire = i;
-  customWireD = WIRES[i].d;
   document.querySelectorAll('.wb').forEach((b, j) => b.classList.toggle('active', j === i));
-  // Sync the d slider
-  const slWd = document.getElementById('slWd');
-  if (slWd) {
-    slWd.value = customWireD;
-    document.getElementById('vWd').textContent = customWireD.toFixed(4) + ' mm';
-    document.getElementById('wdCustomTag').style.display = 'none';
-  }
   updateReadout();
 }
 
@@ -135,16 +121,6 @@ function updateReadout() {
 
 function onDChange() {
   D_mm = parseInt(document.getElementById('slD').value);
-  updateReadout();
-  if (laserOn) flashAlpha = 1.0;
-}
-
-function onWireDChange() {
-  customWireD = parseFloat(document.getElementById('slWd').value);
-  document.getElementById('vWd').textContent = customWireD.toFixed(4) + ' mm';
-  // Show "CUSTOM" tag if differs from wire's actual d
-  const isCustom = Math.abs(customWireD - WIRES[activeWire].d) > 0.0001;
-  document.getElementById('wdCustomTag').style.display = isCustom ? 'inline' : 'none';
   updateReadout();
   if (laserOn) flashAlpha = 1.0;
 }
