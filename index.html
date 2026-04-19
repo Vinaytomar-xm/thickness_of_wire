@@ -16,7 +16,7 @@
     <link rel="apple-touch-icon" href="vinay2.jpeg" sizes="180x180">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles2.css">
 </head>
 
 <body>
@@ -28,7 +28,7 @@
             </div>
         </div>
         <div class="laser-badge">
-            <div class="ldot" id="ldot"></div><span id="lstatus">LASER OFF</span>
+            <div class="ldot" id="ldot"></div><span id="lstatus"> LASER OFF</span>
         </div>
     </header>
 
@@ -59,22 +59,6 @@
                     <input type="range" id="slD" min="700" max="1500" value="1000" step="100" oninput="onDChange()">
                     <div class="d-ticks">
                         <span>700</span><span>900</span><span>1100</span><span>1300</span><span>1500</span>
-                    </div>
-                </div>
-                <div class="ctrl-group">
-                    <div class="ctrl-label">
-                        Wire Diameter d
-                        <span style="display:flex;align-items:center;gap:5px;">
-                            <span id="wdCustomTag" style="display:none;font-size:7px;color:var(--pink);border:1px solid var(--pink);border-radius:2px;padding:0 4px;letter-spacing:1px;">CUSTOM</span>
-                            <span class="ctrl-val" id="vWd">0.1055 mm</span>
-                        </span>
-                    </div>
-                    <input type="range" id="slWd" min="0.02" max="2.00" value="0.10547" step="0.01" oninput="onWireDChange()">
-                    <div class="d-ticks">
-                        <span>0.02</span><span>0.5</span><span>1.0</span><span>1.5</span><span>2.0</span>
-                    </div>
-                    <div style="font-family:'Share Tech Mono',monospace;font-size:7px;color:var(--dim);margin-top:3px;">
-                        ↕ thin→wide fringes &nbsp;&nbsp; ↓ thick→narrow fringes
                     </div>
                 </div>
                 <button class="laser-btn" id="btnLaser" onclick="toggleLaser()">◉ &nbsp;LASER OFF</button>
@@ -200,61 +184,33 @@
                 <p>• <b>Longer wavelength (red vs blue laser)</b> → larger b → wider pattern</p>
                 <p>• <b>b vs D graph</b> → straight line through origin, slope = λ/d → d = λ/slope</p>
 
-                <h3>⚠️ Experimental Limitations — When Measurement Fails</h3>
-                <p>The formula d = Dλ/b only works when the fringe half-width <b>b is within a physically measurable
-                    range</b> on the screen. There are two ways this can break down:</p>
+                <h3>⚠️ Experimental Limitations</h3>
+                <p>This experiment works only when <b>b falls within a measurable range</b> on the screen. Two extreme
+                    cases make measurement impossible:</p>
 
                 <div class="nbox">
-                    <b>↕ Case 1 — Wire Too Thin (Pattern Overflows Screen)</b><br><br>
-                    When d is very small, b = Dλ/d becomes very large. If b is so large that the first dark fringe
-                    falls beyond the edge of the screen, you simply cannot measure b — the ruler has no fringe to
-                    point to.<br><br>
-                    <b>In this simulation:</b> Wire 0 (d = 0.05 mm) starts overflowing at <b>D ≥ 1400 mm</b>.
-                    At D = 1300 mm, the pattern is just visible; at D = 1400 mm, the central maxima is wider than
-                    the screen. You can see this live — slide D from 1300 → 1400 on W0 and the pattern
-                    disappears, replaced by the warning.<br><br>
-                    <b>Real-world example:</b> A spider web silk fibre (~0.003 mm) at D = 1000 mm would give
-                    b ≈ 211 mm — impossible to fit on any lab screen.
+                    <b>↕ Case 1 — Wire Too Thin (e.g. Wire 0, d = 0.02 mm)</b><br><br>
+                    When d is extremely small, b = Dλ/d becomes very large. The central maxima becomes so wide that it
+                    overflows the edges of the screen completely. The first dark fringe falls outside the screen area,
+                    so b cannot be measured at any value of D.<br><br>
+                    <b>Real-world example:</b> A human hair (~0.07 mm) at D = 1500 mm gives b ≈ 13.6 mm — borderline
+                    measurable. A spider web thread (~0.003 mm) would give b ≈ 316 mm — totally unmeasurable on any
+                    normal screen.
                 </div>
 
                 <div class="nbox" style="border-color:rgba(255,136,51,0.3);background:rgba(255,100,20,0.05);">
-                    <b>● Case 2 — Wire Too Thick (Fringes Too Close to Resolve)</b><br><br>
-                    When d is very large, b = Dλ/d becomes extremely small. If b is smaller than the naked-eye
-                    resolution (~0.5 mm) or the ruler's least count, you cannot distinguish one dark fringe from
-                    the next — the whole pattern looks like a single bright spot.<br><br>
-                    <b>In this simulation:</b> Wire 6 (d = 1.50 mm) cannot be resolved at <b>D ≤ 800 mm</b>.
-                    At D = 700 mm, b ≈ 0.30 mm — too small. At D = 900 mm, b ≈ 0.38 mm — just
-                    barely resolvable. Slide D from 800 → 900 on W6 and the warning clears, pattern appears.<br><br>
-                    <b>Real-world example:</b> A 1.5 mm copper rod at D = 500 mm gives b ≈ 0.21 mm — completely
-                    unresolvable with a standard mm scale.
+                    <b>● Case 2 — Wire Too Thick (e.g. Wire 6, d = 2.5 mm)</b><br><br>
+                    When d is very large, b = Dλ/d becomes extremely small — smaller than what the human eye or a scale
+                    can resolve on screen. The dark fringes are so closely packed that they appear as a single uniform
+                    bright spot. Individual fringes cannot be distinguished, so b cannot be measured.<br><br>
+                    <b>Real-world example:</b> A 1 mm copper wire at D = 1000 mm gives b ≈ 0.06 mm — far below the ~0.5
+                    mm resolution of a normal ruler. A 2.5 mm wire gives b ≈ 0.025 mm — completely unresolvable.
                 </div>
 
-                <div class="nbox" style="border-color:rgba(255,221,153,0.4);background:rgba(255,221,100,0.04);">
-                    <b>💛 Human Hair (W7, d ≈ 0.07 mm) — A Special Case</b><br><br>
-                    Human hair has a typical thickness of <b>60–100 µm</b>. In this simulation it is modelled as
-                    <b>d = 0.07 mm = 70 µm</b>. This places it just inside the measurable range across the full
-                    D = 700–1500 mm slider.<br><br>
-                    At D = 1000 mm with He-Ne (λ = 632.8 nm): b = 1000 × 0.0006328 / 0.07 = <b>9.04 mm</b>.
-                    This is wide enough to see clearly on screen and narrow enough that the dark fringes are
-                    well separated — making hair one of the most dramatic demonstration objects for this
-                    experiment.<br><br>
-                    <b>Why hair produces visible fringes:</b> Hair is semi-cylindrical in cross-section, which
-                    modifies the intensity slightly, but Babinet's Principle still holds — the fringe positions
-                    are identical to a rectangular slit of the same width. The simulation approximates it as a
-                    flat wire, which gives the correct fringe spacing.<br><br>
-                    <b>Try it:</b> Select W7, turn laser ON, vary D from 700 → 1500 — watch the fringes spread
-                    exactly as theory predicts. Compare with W1 (d = 0.105 mm) — W7 hair is thinner, so its
-                    fringes are wider.
-                </div>
-
-                <h3>📐 Dynamic Limit Behaviour in This Simulation</h3>
-                <p>Unlike a real lab where you are stuck with fixed equipment, this simulation lets you <b>observe
-                    the transition live</b>:</p>
-                <p>→ Select <b>W0</b> → increase D past 1300 mm → pattern overflows, warning appears</p>
-                <p>→ Select <b>W6</b> → decrease D below 900 mm → fringes become unresolvable, warning appears</p>
-                <p>→ Use the <b>Wire d slider</b> to continuously vary thickness from 0.02–2.00 mm and
-                    watch exactly when fringes appear/disappear — this is the most direct way to understand
-                    both limitations in a single sweep</p>
+                <p>In this simulation, <b>Wire 0</b> (d = 0.020 mm) always falls in Case 1 and <b>Wire 6</b> (d = 2.500
+                    mm) always falls in Case 2. Selecting either and clicking [+ Add Reading] will show the limitation
+                    message in the observation table instead of a recorded value. Wires 1–5 are designed to fall within
+                    the measurable range at D = 700–1500 mm.</p>
             </div>
         </div>
 
@@ -422,6 +378,25 @@
 
     </div>
 
+    <!-- <div>
+        <footer>
+
+            <div class={styles.socials}>
+                <a href="https://github.com/Vinaytomar-xm" target="_blank" rel="noreferrer">
+                    <Github size={20} />
+                </a>
+                <a href="https://www.linkedin.com/in/vinay-singh-tomar-5b65b9377" target="_blank" rel="noreferrer">
+                    <Linkedin size={20} />
+                </a>
+                <a href="mailto:tomarvinaysingh70@gmail.com">
+                    <Mail size={20} />
+                </a>
+            </div>
+            <div style="font-size:12px;color:var(--muted); margin-left: 350px; padding:12px 0;">
+                Developed by Vinay Singh Tomar & Tanishq Agrawal· &copy; 2026 · For educational use only
+            </div>
+        </footer>
+    </div> -->
 
     <footer class="footer">
         <div class="footer-left">DEVELOPED BY - VINAY SINGH TOMAR & TANISHQ AGRAWAL &nbsp;·&nbsp; LASER
@@ -446,7 +421,7 @@
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <script src="script2.js"></script>
 </body>
 
 </html>
